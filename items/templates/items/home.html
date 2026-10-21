@@ -39,13 +39,19 @@
     @media (max-width: 600px) {
         .lost-found-hero {
             width: calc(100% - 16px);
-            min-height: 90vh;
+            min-height: calc(100svh - 70px);
             background-image:
                 linear-gradient(90deg, rgba(7, 27, 68, .92), rgba(10, 43, 103, .72)),
                 url("https://kisiiuniversity.ac.ke/storage/public/static/photos/TReELsj1H9qLIBPKYVWEldxLZgtoZ7oP6UDIKCRa.jpg");
             background-position: center, 55% center;
-            padding: 42px 24px;
+            padding: 34px 20px;
+            border-radius: 16px;
         }
+        .hero-content h1 { font-size: clamp(27px, 8vw, 38px); line-height: 1.12; }
+        .hero-content p { font-size: 16px; line-height: 1.5; }
+        .lost-found-hero .input-group-lg > .form-control { min-width: 0; font-size: 16px; }
+        .lost-found-hero .input-group-lg > .btn { padding: 10px 14px; font-size: 16px; }
+        .hero-buttons > a { flex: 1 1 100%; text-align: center; }
     }
 
     /* Blinking Badges */

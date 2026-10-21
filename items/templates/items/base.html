@@ -68,6 +68,18 @@
             align-items: center;
             gap: 20px;
         }
+        .nav-menu-toggle {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(255, 255, 255, .35);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, .08);
+            color: #fff;
+            font-size: 23px;
+        }
         .nav-link-custom {
             color: #e7efff;
             text-decoration: none;
@@ -205,13 +217,37 @@
         @media (max-width: 991px) {
             .navbar-container {
                 width: 94%;
-                padding: 12px 0;
-                flex-direction: column;
-                gap: 15px;
+                padding: 10px 0;
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 0;
             }
             .main-navbar { min-height: auto; }
-            .nav-links { flex-wrap: wrap; justify-content: center; gap: 12px 18px; }
+            .nav-menu-toggle { display: inline-flex; }
+            .nav-links {
+                display: none;
+                flex: 0 0 100%;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+                width: 100%;
+                margin-top: 12px;
+                padding: 12px;
+                border-radius: 14px;
+                background: #0b285f;
+            }
+            .nav-links.is-open { display: flex; }
+            .nav-link-custom { padding: 10px 12px; border-radius: 9px; }
+            .nav-report { text-align: center; margin: 4px 0; }
+            .profile-menu { padding: 4px 12px; }
             .main-container { width: 94%; margin-top: 20px; }
+        }
+        @media (max-width: 480px) {
+            .brand { font-size: 16px; }
+            .main-container { width: calc(100% - 24px); margin-top: 14px; }
+            .main-footer { padding: 30px 0 18px; }
+            .main-footer .container { padding-left: 20px; padding-right: 20px; }
+            img, video, iframe { max-width: 100%; }
         }
     </style>
 </head>
@@ -223,7 +259,10 @@
             <a href="{% url 'home' %}" class="brand">
                 <i class="bi bi-shield-check text-warning"></i> Campus Lost & Found
             </a>
-            <div class="nav-links">
+            <button class="nav-menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="site-nav" aria-expanded="false" data-nav-toggle>
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+            <div class="nav-links" id="site-nav">
                 <a href="{% url 'home' %}" class="nav-link-custom"><i class="bi bi-house-door-fill"></i> Home</a>
                 <a href="{% url 'item_list' %}" class="nav-link-custom"><i class="bi bi-grid-fill"></i> Browse Items</a>
                 <a href="{% url 'home' %}#services" class="nav-link-custom"><i class="bi bi-gear-wide-connected"></i> Services</a>
@@ -298,5 +337,37 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (() => {
+            const toggle = document.querySelector('[data-nav-toggle]');
+            const menu = document.getElementById('site-nav');
+            if (!toggle || !menu) return;
+
+            const closeMenu = () => {
+                menu.classList.remove('is-open');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.setAttribute('aria-label', 'Open navigation menu');
+                toggle.innerHTML = '<i class="bi bi-list" aria-hidden="true"></i>';
+            };
+
+            toggle.addEventListener('click', () => {
+                const isOpen = menu.classList.toggle('is-open');
+                toggle.setAttribute('aria-expanded', String(isOpen));
+                toggle.setAttribute('aria-label', isOpen ? 'Close navigation menu' : 'Open navigation menu');
+                toggle.innerHTML = `<i class="bi ${isOpen ? 'bi-x-lg' : 'bi-list'}" aria-hidden="true"></i>`;
+            });
+
+            menu.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
+            document.addEventListener('keydown', event => {
+                if (event.key === 'Escape' && menu.classList.contains('is-open')) {
+                    closeMenu();
+                    toggle.focus();
+                }
+            });
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 991) closeMenu();
+            });
+        })();
+    </script>
 </body>
 </html>

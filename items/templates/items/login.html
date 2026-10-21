@@ -1,0 +1,40 @@
+{% extends 'items/base.html' %}
+{% block title %}Sign in · Campus Lost &amp; Found{% endblock %}
+{% block content %}
+<style>
+    .auth-shell { max-width: 1040px; margin: 24px auto; overflow: hidden; border-radius: 26px; background: #fff; box-shadow: 0 24px 70px rgba(16,47,112,.14); display: grid; grid-template-columns: .95fr 1.05fr; }
+    .auth-intro { padding: clamp(30px,5vw,58px); color: #fff; background: radial-gradient(circle at 85% 15%,rgba(74,151,255,.65),transparent 28%),linear-gradient(145deg,#0a1f4b,#1769e0); display: flex; flex-direction: column; justify-content: space-between; min-height: 550px; }
+    .auth-form-panel { padding: clamp(28px,5vw,58px); align-self: center; }
+    .auth-icon { width: 58px; height: 58px; border-radius: 18px; display: grid; place-items: center; color: #fff; background: rgba(255,255,255,.16); font-size: 25px; }
+    .auth-intro h1 { margin: 25px 0 12px; font-weight: 800; letter-spacing: -1px; }
+    .auth-intro p { color: #d8e8fa; line-height: 1.7; }
+    .auth-kicker { font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #b9d8ff; text-transform: uppercase; }
+    .auth-field { height: 52px; border-radius: 12px; }
+    .auth-submit { min-height: 52px; }
+    .auth-help { color: #667b90; font-size: 13px; }
+    @media(max-width:760px) { .auth-shell { grid-template-columns: 1fr; margin-top: 8px; } .auth-intro { min-height: 250px; } .auth-intro h1 { margin-top: 15px; font-size: 27px; } .auth-intro .auth-kicker:last-child { display:none; } }
+</style>
+<section class="auth-shell">
+    <div class="auth-intro">
+        <div><div class="auth-icon"><i class="bi bi-shield-check"></i></div><div class="auth-kicker mt-4">Campus Lost &amp; Found</div><h1>Good to have you back.</h1><p>Sign in to report an item, follow your reports, and help things find their way back to their owners.</p></div>
+        <div class="auth-kicker">A connected campus starts with helping one another.</div>
+    </div>
+    <div class="auth-form-panel">
+        <div class="mb-4"><div class="eyebrow">Your campus account</div><h2 class="section-title mt-2 mb-1" style="font-size:27px">Sign in</h2><p class="auth-help mb-0">Use your campus email address or existing username.</p></div>
+        {% if form.errors %}<div class="alert alert-danger rounded-3" role="alert">We couldn't sign you in with those details. Check your username/email and password, then try again.</div>{% endif %}
+        {% if next %}<div class="alert alert-info rounded-3">Sign in to continue to the page you requested.</div>{% endif %}
+        <form method="post" action="{% url 'login' %}">{% csrf_token %}{% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+            <div class="mb-3"><label class="form-label fw-semibold" for="id_username">Email address or username <span class="text-danger small">* Required</span></label><input class="form-control auth-field" id="id_username" name="username" type="text" placeholder="Enter email address or username" value="{{ form.username.value|default:'' }}" autocomplete="username" required autofocus><div class="form-text">Enter the email address or username linked to your account.</div></div>
+            <div class="mb-3"><div class="d-flex justify-content-between"><label class="form-label fw-semibold" for="id_password">Password <span class="text-danger small">* Required</span></label><a class="small text-decoration-none" href="{% url 'password_reset' %}">Forgot password?</a></div><input class="form-control auth-field" id="id_password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required><div class="form-check mt-2"><input class="form-check-input" type="checkbox" id="showLoginPassword"><label class="form-check-label small text-secondary" for="showLoginPassword">Show password</label></div></div>
+            <div class="form-check mb-4"><input class="form-check-input" type="checkbox" name="remember_me" id="rememberMe"><label class="form-check-label small text-secondary" for="rememberMe">Keep me signed in for 14 days</label></div>
+            <button type="submit" class="button-primary auth-submit w-100"><i class="bi bi-box-arrow-in-right"></i> Sign in securely</button>
+        </form>
+        <div class="text-center mt-4 pt-3 border-top auth-help">Not registered yet? <a href="{% url 'register' %}{% if next %}?next={{ next|urlencode }}{% endif %}" class="fw-bold text-decoration-none">Create your student account</a></div>
+    </div>
+</section>
+<script>
+    document.getElementById('showLoginPassword').addEventListener('change', function () {
+        document.getElementById('id_password').type = this.checked ? 'text' : 'password';
+    });
+</script>
+{% endblock %}

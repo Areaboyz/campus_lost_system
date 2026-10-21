@@ -1,0 +1,375 @@
+{% extends 'items/base.html' %}
+
+{% block content %}
+<style>
+    body { background: #f4f7fb; }
+    .main-container:has(.lost-found-hero) {
+        width: 100%;
+        margin: 0 auto 50px;
+    }
+    .lost-found-hero {
+        background:
+            linear-gradient(90deg, rgba(7, 27, 68, .96) 0%, rgba(10, 43, 103, .88) 48%, rgba(10, 43, 103, .30) 100%),
+            url("https://kisiiuniversity.ac.ke/storage/public/static/photos/TReELsj1H9qLIBPKYVWEldxLZgtoZ7oP6UDIKCRa.jpg") center 42% / cover no-repeat,
+            linear-gradient(135deg, #0a1f4b, #1769e0);
+        position: relative;
+        isolation: isolate;
+        width: calc(100% - 24px);
+        min-height: 90vh;
+        margin: 0 auto 35px;
+        border-radius: 24px;
+        padding: 60px 40px;
+        color: white;
+        box-shadow: 0 12px 30px rgba(16, 47, 112, 0.2);
+        display: flex;
+        align-items: center;
+    }
+    .hero-content { max-width: 750px; }
+    .hero-content h1 { font-size: 42px; font-weight: 800; margin-bottom: 15px; color: #fff; }
+    .hero-content p { font-size: 18px; color: #e7efff; margin-bottom: 25px; line-height: 1.6; }
+    .hero-buttons { display: flex; gap: 15px; flex-wrap: wrap; }
+    .btn-hero-primary {
+        background: #fff; color: #102f70; font-weight: 700; padding: 13px 28px; border-radius: 12px; text-decoration: none; transition: 0.3s;
+    }
+    .btn-hero-primary:hover { background: #f4f8fc; color: #0d56bd; transform: translateY(-2px); }
+    .btn-hero-outline {
+        background: rgba(255,255,255,0.1); color: #fff; border: 2px solid rgba(255,255,255,0.6); font-weight: 600; padding: 13px 28px; border-radius: 12px; text-decoration: none; transition: 0.3s;
+    }
+    .btn-hero-outline:hover { background: rgba(255,255,255,0.25); color: #fff; transform: translateY(-2px); }
+    @media (max-width: 600px) {
+        .lost-found-hero {
+            width: calc(100% - 16px);
+            min-height: 90vh;
+            background-image:
+                linear-gradient(90deg, rgba(7, 27, 68, .92), rgba(10, 43, 103, .72)),
+                url("https://kisiiuniversity.ac.ke/storage/public/static/photos/TReELsj1H9qLIBPKYVWEldxLZgtoZ7oP6UDIKCRa.jpg");
+            background-position: center, 55% center;
+            padding: 42px 24px;
+        }
+    }
+
+    /* Blinking Badges */
+    .item-status {
+        display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase;
+    }
+    .lost-status {
+        background: #ffe4e6; color: #d92d20; border: 1px solid #fecdd3; animation: blink-red 1.8s infinite ease-in-out;
+    }
+    .lost-status::before { content: ''; width: 8px; height: 8px; background-color: #d92d20; border-radius: 50%; display: inline-block; }
+    @keyframes blink-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(217, 45, 32, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(217, 45, 32, 0); } }
+
+    .found-status {
+        background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; animation: blink-green 1.8s infinite ease-in-out;
+    }
+    .found-status::before { content: ''; width: 8px; height: 8px; background-color: #15803d; border-radius: 50%; display: inline-block; }
+    @keyframes blink-green { 0%, 100% { box-shadow: 0 0 0 0 rgba(21, 128, 61, 0.4); } 50% { box-shadow: 0 0 0 10px rgba(21, 128, 61, 0); } }
+
+    .stat-card {
+        background: white; border-radius: 18px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; text-align: center; transition: transform 0.3s;
+    }
+    .stat-card:hover { transform: translateY(-4px); }
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .section-title { color: #123b70; font-weight: 800; font-size: 26px; margin: 0; }
+    
+    .item-card {
+        background: white; border: 1px solid #e2e8f0; border-radius: 20px; overflow: hidden; height: 100%; box-shadow: 0 5px 18px rgba(0,0,0,0.05); transition: 0.3s; display: flex; flex-direction: column;
+    }
+    .item-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+    .item-image { width: 100%; height: 210px; object-fit: cover; }
+    .no-image { height: 210px; background: #e9eef5; color: #667085; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .item-body { padding: 20px; flex-grow: 1; }
+    .item-title { color: #173b67; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+    .item-location { color: #667085; font-size: 14px; margin-bottom: 10px; }
+    .item-description { color: #667085; font-size: 14px; line-height: 1.5; }
+    .item-footer { padding: 0 20px 20px; background: white; }
+    .details-btn { display: block; text-align: center; width: 100%; padding: 11px; border-radius: 12px; background: #e8f3ff; color: #1769e0; text-decoration: none; font-weight: 700; transition: 0.3s; }
+    .details-btn:hover { background: #1769e0; color: white; }
+    
+    .feature-box { background: white; padding: 30px; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center; height: 100%; transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+    .feature-box:hover { transform: translateY(-6px); border-color: #b8d5ff; box-shadow: 0 14px 30px rgba(23, 105, 224, .14); }
+    .feature-icon { width: 60px; height: 60px; border-radius: 50%; background: #e8f3ff; color: #1769e0; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 20px; transition: transform .25s ease, background-color .25s ease, color .25s ease; }
+    .feature-box:hover .feature-icon { transform: scale(1.08); background: #1769e0; color: #fff; }
+
+    /* Homepage accessibility controls */
+    .main-footer .col-md-4:last-child { position: relative; }
+    .a11y-launcher { position: absolute; z-index: 1100; right: 0; bottom: 0; display: inline-block; margin: 0; vertical-align: middle; }
+    .a11y-trigger { display: inline-flex; align-items: center; justify-content: center; width: 46px; height: 46px; border: 1px solid #8dbbff; border-radius: 50%; background: #1769e0; color: #fff; padding: 0; font-size: 22px; box-shadow: 0 5px 18px rgba(0,0,0,.25); }
+    .a11y-trigger:hover, .a11y-trigger:focus-visible { background: #1054b7; color: #fff; }
+    .a11y-panel { position: absolute; z-index: 1101; right: 0; bottom: 56px; left: auto; width: min(360px, calc(100vw - 32px)); max-height: min(76vh, 620px); overflow-y: auto; padding: 16px; border: 1px solid #1769e0; border-radius: 18px; background: #102f70; color: #fff; box-shadow: 0 14px 40px rgba(0,0,0,.4); }
+    .a11y-panel[hidden] { display: none; }
+    .a11y-panel-header { position: relative; padding-right: 34px; }
+    .a11y-close { position: absolute; top: 0; right: 0; display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; background: transparent; color: #ffc107; font-size: 24px; line-height: 1; }
+    .a11y-close:hover, .a11y-close:focus-visible { background: rgba(255,255,255,.15); color: #ffda6a; }
+    .a11y-title { color: #fff; font-weight: 800; }
+    .a11y-subtitle { color: #b9e8dc; font-size: 12px; }
+    .a11y-section-label { color: #65dfc0; font-size: 12px; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+    .a11y-size-option { min-height: 62px; border: 1px solid #cbd5e1; border-radius: 12px; background: transparent; color: #fff; }
+    .a11y-size-option[aria-pressed="true"] { background: #fff; color: #005b48; border-color: #00d4a0; }
+    .a11y-size-option small { display: block; font-size: 10px; opacity: .8; }
+    .a11y-setting { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 10px; padding: 11px 12px; border: 1px solid #dce5f0; border-radius: 14px; background: #cbd2dc; color: #10213b; }
+    .a11y-setting-copy { font-size: 13px; font-weight: 750; }
+    .a11y-setting-copy small { display: block; color: #40516a; font-weight: 400; }
+    .a11y-setting .form-check-input { flex: 0 0 auto; width: 2.4em; height: 1.25em; margin: 0; cursor: pointer; }
+    .a11y-reset { width: 100%; margin-top: 14px; border: 0; border-radius: 12px; background: #fff; color: #102f70; padding: 11px; font-weight: 750; }
+    html.a11y-large { font-size: 110%; }
+    html.a11y-xlarge { font-size: 120%; }
+    html.a11y-dyslexia body { font-family: Verdana, Arial, sans-serif !important; letter-spacing: .025em; line-height: 1.65; }
+    html.a11y-underline a { text-decoration: underline !important; text-decoration-thickness: 2px !important; text-underline-offset: 3px !important; }
+    html.a11y-cursor, html.a11y-cursor * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 36 36'%3E%3Cpath d='M4 2v27l7-7 5 11 5-2-5-11h11z' fill='white' stroke='%23000' stroke-width='2'/%3E%3C/svg%3E") 4 2, auto !important; }
+    html.a11y-contrast body { background: #050816 !important; color: #fff !important; }
+    html.a11y-contrast body .main-container .stat-card,
+    html.a11y-contrast body .main-container .feature-box,
+    html.a11y-contrast body .main-container #about > div { background: #111a30 !important; border-color: #fff !important; color: #fff !important; }
+    html.a11y-contrast body .main-container :is(p, h1, h2, h3, h4, h5, span, label) { color: #fff !important; }
+    html.a11y-contrast body .main-container a { color: #ffeb3b !important; }
+    @media (max-width: 480px) { .a11y-panel { bottom: 54px; } }
+</style>
+
+<!-- HERO SECTION -->
+<div class="lost-found-hero">
+    <div class="hero-content">
+        <h1>🏫 Campus Lost & Found Portal</h1>
+        <p>Lost your student ID, textbook, keys, or electronics on campus? Or found something belonging to a peer? Connect, report, and recover items quickly and securely within our campus network.</p>
+        
+        <form action="{% url 'item_list' %}" method="GET" class="mb-4">
+            <div class="input-group input-group-lg shadow-sm rounded-3 overflow-hidden">
+                <input type="text" name="q" class="form-control border-0" placeholder="Search lost or found items..." required pattern=".*\S.*" title="Enter an item name or keyword to search.">
+                <button class="btn btn-warning fw-bold px-4" type="submit"><i class="bi bi-search me-1"></i> Search</button>
+            </div>
+        </form>
+
+        <div class="hero-buttons">
+            <a href="{% url 'report_item' %}?status=LOST" class="btn-hero-primary"><i class="bi bi-exclamation-circle-fill me-1"></i> Report Lost Item</a>
+            <a href="{% url 'report_item' %}?status=FOUND" class="btn-hero-outline"><i class="bi bi-check-circle-fill me-1"></i> Report Found Item</a>
+        </div>
+    </div>
+</div>
+
+<!-- LIVE STATS BANNER -->
+{% if user.is_authenticated %}
+<div class="row mb-5 g-4">
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="text-primary fs-3 mb-1"><i class="bi bi-archive-fill"></i></div>
+            <h3 class="text-primary fw-bold mb-1">{{ total_count|default:0 }}</h3>
+            <p class="text-muted small mb-0 fw-semibold">Active Items</p>
+            <a href="{% url 'item_list' %}" class="btn btn-sm btn-outline-primary mt-2">View</a>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="text-danger fs-3 mb-1"><i class="bi bi-exclamation-triangle-fill"></i></div>
+            <h3 class="text-danger fw-bold mb-1">{{ lost_count|default:0 }}</h3>
+            <p class="text-muted small mb-0 fw-semibold">Lost Reports</p>
+            <a href="{% url 'item_list' %}?status=LOST" class="btn btn-sm btn-outline-danger mt-2">View</a>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="text-success fs-3 mb-1"><i class="bi bi-check-circle-fill"></i></div>
+            <h3 class="text-success fw-bold mb-1">{{ found_count|default:0 }}</h3>
+            <p class="text-muted small mb-0 fw-semibold">Found Reports</p>
+            <a href="{% url 'item_list' %}?status=FOUND" class="btn btn-sm btn-outline-success mt-2">View</a>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="stat-card">
+            <div class="text-info fs-3 mb-1"><i class="bi bi-person-lines-fill"></i></div>
+            <h3 class="text-info fw-bold mb-1">{% if user.is_authenticated %}{{ my_reports_count|default:0 }}{% else %}—{% endif %}</h3>
+            <p class="text-muted small mb-0 fw-semibold">Your Reports</p>
+            <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-info mt-2">View</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% comment %}Recently reported items are intentionally hidden from the homepage.{% endcomment %}
+{% comment %}
+<!-- RECENT ITEMS FEED -->
+<div class="section-header">
+    <h2 class="section-title">Recently Reported Items</h2>
+    <a href="{% url 'item_list' %}" class="text-decoration-none fw-bold text-primary">Browse All Feed →</a>
+</div>
+
+<div class="row g-4 mb-5">
+    {% for item in recent_items %}
+        <div class="col-xl-4 col-md-6">
+            <div class="item-card">
+                {% if item.image %}
+                    <img src="{{ item.image.url }}" class="item-image" alt="{{ item.title }}">
+                {% else %}
+                    <div class="no-image">
+                        <i class="bi bi-image text-muted fs-1 mb-2"></i>
+                        <span>No Image Available</span>
+                    </div>
+                {% endif %}
+                <div class="item-body">
+                    <div>
+                        <span class="item-status {% if item.status == 'LOST' %}lost-status{% else %}found-status{% endif %}">
+                            {{ item.get_status_display }}
+                        </span>
+                    </div>
+                    <h5 class="item-title">{{ item.title }}</h5>
+                    <p class="item-location"><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ item.location }}</p>
+                    <p class="item-description">{{ item.description|truncatechars:80 }}</p>
+                </div>
+                <div class="item-footer">
+                    <a href="{% url 'item_detail' item.id %}" class="details-btn">View Details <i class="bi bi-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center py-5 bg-white border-0 shadow-sm rounded-4">
+                <h4 class="alert-heading text-primary fw-bold">No active items reported yet!</h4>
+                <p class="text-muted mb-4">Be the first student to post a lost or found item to help out the campus community.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'report_item' %}" class="btn btn-primary px-4 py-2 rounded-pill fw-semibold">Report an Item Now</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-outline-primary px-4 py-2 rounded-pill fw-semibold">Login to Report</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endcomment %}
+<!-- SERVICES SECTION -->
+<div id="services" class="pt-4 mb-5">
+    <div class="text-center mb-4">
+        <h2 class="section-title">Our System Services</h2>
+        <p class="text-muted">How our campus portal helps you find missing belongings</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="feature-box">
+                <div class="feature-icon"><i class="bi bi-megaphone-fill"></i></div>
+                <h4 class="fw-bold fs-5 text-dark">Instant Reporting</h4>
+                <p class="text-muted small mb-0">Post missing or found items in seconds with photos, locations, and descriptions.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-box">
+                <div class="feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
+                <h4 class="fw-bold fs-5 text-dark">Verified Ownership</h4>
+                <p class="text-muted small mb-0">Claim lost items safely by verifying ownership details with the reporter.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-box">
+                <div class="feature-icon"><i class="bi bi-bell-fill"></i></div>
+                <h4 class="fw-bold fs-5 text-dark">Campus Wide Alerts</h4>
+                <p class="text-muted small mb-0">Get items noticed fast by broadcasting lost items across student channels.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ABOUT US SECTION -->
+<div id="about" class="pt-4 mb-4">
+    <div class="bg-white p-4 p-md-5 rounded-4 border shadow-sm">
+        <div class="row align-items-center g-4">
+            <div class="col-md-8">
+                <h3 class="fw-bold text-primary mb-2">About Campus Lost & Found</h3>
+                <p class="text-muted mb-0">Our platform is designed to unite students, faculty, and campus security staff to ensure lost belongings find their way back home. Whether you left your laptop in the library or found keys near the cafeteria, this platform makes returning items seamless and organized.</p>
+            </div>
+            <div class="col-md-4 text-md-end">
+                {% if not user.is_authenticated %}
+                    <button type="button" id="join-community" class="btn btn-primary btn-lg rounded-3 fw-bold" aria-controls="social-links" aria-expanded="false">Join Community</button>
+                {% else %}
+                    <a href="{% url 'report_item' %}" class="btn btn-success btn-lg rounded-3 fw-bold">Report an Item</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="a11y-launcher" id="accessibilityWidget">
+    <section class="a11y-panel" id="accessibilityPanel" role="dialog" aria-label="Accessibility tools" aria-modal="false" hidden>
+        <div class="a11y-panel-header d-flex align-items-center gap-2 mb-3">
+            <span class="rounded-3 px-2 py-1" style="background:#1769e0;color:#fff"><i class="bi bi-universal-access-circle"></i></span>
+            <div><div class="a11y-title">Accessibility Tools</div><div class="a11y-subtitle">Customize your viewing preferences</div></div>
+            <button type="button" class="a11y-close" id="a11yClose" aria-label="Close accessibility tools" title="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+        </div>
+        <div class="a11y-section-label mb-2"><i class="bi bi-fonts me-1"></i> Text size</div>
+        <div class="d-flex gap-2 mb-3" role="group" aria-label="Text size">
+            <button type="button" class="a11y-size-option flex-fill" data-a11y-size="default" aria-pressed="true">A<small>Default</small></button>
+            <button type="button" class="a11y-size-option flex-fill" data-a11y-size="large" aria-pressed="false">A+<small>Large</small></button>
+            <button type="button" class="a11y-size-option flex-fill" data-a11y-size="xlarge" aria-pressed="false">A++<small>X-Large</small></button>
+        </div>
+        <label class="a11y-setting"><span class="a11y-setting-copy"><i class="bi bi-circle-half me-2"></i>High Contrast Mode<small>Dark background with vivid text</small></span><input class="form-check-input" type="checkbox" data-a11y-toggle="contrast" aria-label="High contrast mode"></label>
+        <label class="a11y-setting"><span class="a11y-setting-copy"><i class="bi bi-fonts me-2"></i>Dyslexia-Friendly Font<small>Use a clear, spacious font</small></span><input class="form-check-input" type="checkbox" data-a11y-toggle="dyslexia" aria-label="Dyslexia-friendly font"></label>
+        <label class="a11y-setting"><span class="a11y-setting-copy"><i class="bi bi-link-45deg me-2"></i>Underline Links<small>Highlight clickable navigation links</small></span><input class="form-check-input" type="checkbox" data-a11y-toggle="underline" aria-label="Underline links"></label>
+        <label class="a11y-setting"><span class="a11y-setting-copy"><i class="bi bi-cursor me-2"></i>Enlarged Cursor<small>Use a larger pointer for tracking</small></span><input class="form-check-input" type="checkbox" data-a11y-toggle="cursor" aria-label="Enlarged cursor"></label>
+        <button type="button" class="a11y-reset" id="a11yReset"><i class="bi bi-arrow-counterclockwise me-1"></i> Reset to Default Settings</button>
+    </section>
+    <button type="button" class="a11y-trigger" id="a11yTrigger" aria-label="Accessibility" title="Accessibility" aria-expanded="false" aria-controls="accessibilityPanel"><i class="bi bi-universal-access-circle" aria-hidden="true"></i></button>
+</div>
+
+<script>
+    (function () {
+        const root = document.documentElement;
+        const panel = document.getElementById('accessibilityPanel');
+        const trigger = document.getElementById('a11yTrigger');
+        document.addEventListener('DOMContentLoaded', function () {
+            const socialIcons = document.querySelector('.main-footer .social-icons');
+            const widget = document.getElementById('accessibilityWidget');
+            const footerColumn = document.querySelector('.main-footer .col-md-4:last-child');
+            if (footerColumn && widget) footerColumn.appendChild(widget);
+
+            const joinButton = document.getElementById('join-community');
+            if (joinButton && socialIcons) {
+                joinButton.addEventListener('click', function () {
+                    const isExpanded = joinButton.getAttribute('aria-expanded') === 'true';
+                    joinButton.setAttribute('aria-expanded', String(!isExpanded));
+                    socialIcons.hidden = isExpanded;
+                    if (!isExpanded) socialIcons.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+            }
+        });
+        const storageKey = 'campusAccessibilitySettings';
+        const classes = { contrast: 'a11y-contrast', dyslexia: 'a11y-dyslexia', underline: 'a11y-underline', cursor: 'a11y-cursor' };
+        let settings = { size: 'default', contrast: false, dyslexia: false, underline: false, cursor: false };
+        try { settings = { ...settings, ...JSON.parse(localStorage.getItem(storageKey) || '{}') }; } catch (error) {}
+
+        function applySettings() {
+            root.classList.remove('a11y-large', 'a11y-xlarge');
+            if (settings.size === 'large') root.classList.add('a11y-large');
+            if (settings.size === 'xlarge') root.classList.add('a11y-xlarge');
+            Object.keys(classes).forEach(function (key) {
+                root.classList.toggle(classes[key], Boolean(settings[key]));
+                document.querySelector('[data-a11y-toggle="' + key + '"]').checked = Boolean(settings[key]);
+            });
+            document.querySelectorAll('[data-a11y-size]').forEach(function (button) {
+                button.setAttribute('aria-pressed', String(button.dataset.a11ySize === settings.size));
+            });
+            localStorage.setItem(storageKey, JSON.stringify(settings));
+        }
+
+        trigger.addEventListener('click', function () {
+            const isOpen = !panel.hidden;
+            panel.hidden = isOpen;
+            trigger.setAttribute('aria-expanded', String(!isOpen));
+        });
+        document.getElementById('a11yClose').addEventListener('click', function () {
+            panel.hidden = true;
+            trigger.setAttribute('aria-expanded', 'false');
+            trigger.focus();
+        });
+        document.querySelectorAll('[data-a11y-size]').forEach(function (button) {
+            button.addEventListener('click', function () { settings.size = button.dataset.a11ySize; applySettings(); });
+        });
+        document.querySelectorAll('[data-a11y-toggle]').forEach(function (input) {
+            input.addEventListener('change', function () { settings[input.dataset.a11yToggle] = input.checked; applySettings(); });
+        });
+        document.getElementById('a11yReset').addEventListener('click', function () {
+            settings = { size: 'default', contrast: false, dyslexia: false, underline: false, cursor: false };
+            applySettings();
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !panel.hidden) { panel.hidden = true; trigger.setAttribute('aria-expanded', 'false'); trigger.focus(); }
+        });
+        applySettings();
+    })();
+</script>
+{% endblock %}

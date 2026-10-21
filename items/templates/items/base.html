@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Campus Lost &amp; Found Portal{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        :root {
+            --campus-navy: #0a1f4b;
+            --campus-blue: #1769e0;
+            --campus-blue-dark: #1054b7;
+            --campus-ink: #173b67;
+            --campus-muted: #64788d;
+            --campus-line: #e2eaf2;
+            --campus-canvas: #f4f8fc;
+            --campus-shadow: 0 12px 32px rgba(16, 47, 112, .08);
+            --bs-primary: #1769e0;
+            --bs-success: #1769e0;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: #f4f8fc;
+            color: #173b67;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+
+        }
+
+        /* NAVBAR */
+        .main-navbar {
+            background: #102f70;
+            min-height: 70px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .navbar-container {
+            width: 92%;
+            max-width: 1400px;
+            margin: auto;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .brand {
+            color: white;
+            text-decoration: none;
+            font-size: 22px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .brand:hover { color: #dbe7fa; }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .nav-link-custom {
+            color: #e7efff;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .nav-link-custom:hover { color: #38ef7d; }
+        .nav-report {
+            background: linear-gradient(135deg, #0878f9, #0565d5);
+            color: white;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(8, 120, 249, 0.3);
+            transition: all 0.3s ease;
+        }
+        .nav-report:hover {
+            color: white;
+            transform: translateY(-2px);
+        }
+        .username {
+            color: #dbe7fa;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+        .profile-menu .dropdown-toggle {
+            border: 0;
+            cursor: pointer;
+        }
+        .profile-menu .dropdown-toggle::after { margin-left: 8px; }
+        .profile-menu .dropdown-menu { min-width: 180px; border: 1px solid var(--campus-line); border-radius: 12px; box-shadow: var(--campus-shadow); }
+        .profile-menu .dropdown-item { padding: 9px 14px; }
+        .profile-menu .dropdown-item i { color: var(--campus-blue); transition: color .18s ease, transform .18s ease; }
+        .profile-menu .dropdown-item:hover i,
+        .profile-menu .dropdown-item:focus i { color: var(--campus-blue-dark); transform: translateY(-2px) scale(1.12); }
+        .profile-menu form { margin: 0; }
+
+        /* MAIN CONTAINER */
+        .main-container {
+            width: 92%;
+    
+            margin: 30px auto 50px;
+            flex: 1;
+        }
+
+        /* FOOTER */
+        .main-footer {
+            background: #0a1f4b;
+            color: #dbeafe;
+            padding: 40px 0 20px;
+            margin-top: auto;
+            border-top: 3px solid #1769e0;
+        }
+        .main-footer h5 { font-size: 1.35rem; letter-spacing: .1px; }
+        .main-footer .text-muted { color: #dbeafe !important; }
+        .main-footer p.small { font-size: .95rem; line-height: 1.7; }
+        .main-footer h5,
+        .main-footer h6 {
+            width: fit-content;
+            transition: color .2s ease, transform .2s ease;
+        }
+        .main-footer h5:hover,
+        .main-footer h6:hover {
+            color: #7dd3fc !important;
+            transform: translateY(-2px);
+        }
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: #38ef7d; }
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            margin-right: 8px;
+            text-decoration: none;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .social-icons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .social-icons[hidden] { display: none; }
+        .social-icons a:hover {
+            background: #1769e0;
+            transform: translateY(-3px);
+        }
+
+        /* Shared page components keep the same look across the site. */
+        .main-container { color: var(--campus-ink); }
+        .nav-link-custom:hover, .footer-links a:hover { color: #b9d8ff; }
+        .page-heading { margin-bottom: 26px; }
+        .page-heading h1 { margin: 7px 0 5px; color: var(--campus-navy); font-size: clamp(28px, 4vw, 38px); font-weight: 820; letter-spacing: -1.1px; }
+        .page-heading p, .item-meta { color: var(--campus-muted); }
+        .eyebrow { color: var(--campus-blue); font-size: 11px; font-weight: 850; letter-spacing: 1.45px; text-transform: uppercase; }
+        .section-title { color: var(--campus-navy); font-size: 19px; font-weight: 780; letter-spacing: -.3px; }
+        .surface, .stat-tile, .item-tile { border: 1px solid var(--campus-line); border-radius: 18px; background: #fff; box-shadow: var(--campus-shadow); }
+        .stat-tile { height: 100%; padding: 21px; }
+        .stat-label { color: var(--campus-muted); font-size: 13px; font-weight: 650; }
+        .stat-value { margin-top: 8px; color: var(--campus-navy); font-size: 32px; line-height: 1; font-weight: 820; }
+        .stat-icon, .auth-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: #edf5ff; color: var(--campus-blue); font-size: 19px; }
+        .item-tile { height: 100%; padding: 20px; }
+        .item-title { margin: 12px 0 7px; color: var(--campus-navy); font-weight: 760; }
+        .status-pill { display: inline-flex; align-items: center; padding: 5px 10px; border-radius: 99px; font-size: 11px; font-weight: 800; letter-spacing: .35px; text-transform: uppercase; }
+        .status-lost { color: #b42318; background: #fff0ee; }
+        .status-found { color: #087443; background: #e7f8ef; }
+        .button-primary, .button-soft { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 11px; padding: 11px 16px; font-size: 14px; font-weight: 750; text-decoration: none; transition: transform .18s ease, background .18s ease, box-shadow .18s ease; }
+        .button-primary { color: #fff !important; background: var(--campus-blue); box-shadow: 0 5px 13px rgba(23, 105, 224, .18); }
+        .button-primary:hover { color: #fff; background: var(--campus-blue-dark); transform: translateY(-1px); }
+        .button-soft { color: var(--campus-blue); background: #edf5ff; }
+        .button-soft:hover { color: #fff; background: var(--campus-blue); }
+        .btn-success { --bs-btn-bg: var(--campus-blue); --bs-btn-border-color: var(--campus-blue); --bs-btn-hover-bg: var(--campus-blue-dark); --bs-btn-hover-border-color: var(--campus-blue-dark); --bs-btn-active-bg: var(--campus-blue-dark); --bs-btn-active-border-color: var(--campus-blue-dark); }
+        .text-success { color: var(--campus-blue) !important; }
+        .bg-success { background-color: var(--campus-blue) !important; }
+        .form-control:focus, .form-select:focus, .form-check-input:focus { border-color: #78aef4; box-shadow: 0 0 0 .2rem rgba(23, 105, 224, .15); }
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid rgba(23, 105, 224, .38); outline-offset: 2px; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+        @media (max-width: 991px) {
+            .navbar-container {
+                width: 94%;
+                padding: 12px 0;
+                flex-direction: column;
+                gap: 15px;
+            }
+            .main-navbar { min-height: auto; }
+            .nav-links { flex-wrap: wrap; justify-content: center; gap: 12px 18px; }
+            .main-container { width: 94%; margin-top: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="main-navbar">
+        <div class="navbar-container">
+            <a href="{% url 'home' %}" class="brand">
+                <i class="bi bi-shield-check text-warning"></i> Campus Lost & Found
+            </a>
+            <div class="nav-links">
+                <a href="{% url 'home' %}" class="nav-link-custom"><i class="bi bi-house-door-fill"></i> Home</a>
+                <a href="{% url 'item_list' %}" class="nav-link-custom"><i class="bi bi-grid-fill"></i> Browse Items</a>
+                <a href="{% url 'home' %}#services" class="nav-link-custom"><i class="bi bi-gear-wide-connected"></i> Services</a>
+                <a href="{% url 'home' %}#about" class="nav-link-custom"><i class="bi bi-info-circle-fill"></i> About</a>
+
+                {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}" class="nav-link-custom"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    <a href="{% url 'report_item' %}" class="nav-report"><i class="bi bi-plus-circle-fill me-1"></i> {% if user.is_staff %}Post Item{% else %}Report Item{% endif %}</a>
+                    <div class="dropdown profile-menu">
+                        <button class="username dropdown-toggle" type="button" id="profileMenuButton" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Open profile menu">
+                            {% if user.student_profile.profile_picture %}<img src="{{ user.student_profile.profile_picture.url }}" alt="" class="rounded-circle me-1" width="24" height="24" style="object-fit: cover; vertical-align: middle;">{% else %}<i class="bi bi-person-circle me-1"></i>{% endif %}
+                            {% if user.first_name and user.last_name %}{{ user.first_name|slice:":1"|upper }}{{ user.last_name|slice:":1"|upper }}{% else %}{{ user.email|slice:":2"|upper }}{% endif %}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileMenuButton">
+                            <li><a class="dropdown-item" href="{% url 'profile_settings' %}"><i class="bi bi-person me-2"></i>Profile</a></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                {% else %}
+                    <a href="{% url 'login' %}" class="nav-link-custom"><i class="bi bi-box-arrow-in-right"></i> Login</a>
+                    <a href="{% url 'register' %}" class="nav-link-custom"><i class="bi bi-person-plus-fill"></i> Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAGE CONTENT -->
+    <main class="main-container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="container">
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <h5 class="text-white fw-bold mb-3">🏫 Campus Lost & Found</h5>
+                    <p class="small text-muted">A secure and reliable community platform designed to help students and staff recover lost belongings quickly and safely across campus.</p>
+                </div>
+                <div class="col-md-4 footer-links">
+                    <h6 class="text-white fw-bold mb-3">Quick Links</h6>
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-2"><a href="{% url 'home' %}">Home Dashboard</a></li>
+                        <li class="mb-2"><a href="{% url 'item_list' %}">Browse Feed</a></li>
+                        <li class="mb-2"><a href="{% url 'register' %}">Create Account</a></li>
+                        <li class="mb-2"><a href="{% url 'login' %}">Sign In Portal</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h6 class="text-white fw-bold mb-3">Connect With Us</h6>
+                    <p class="small text-muted mb-3">Stay updated with campus announcements and recovered properties.</p>
+                    <div class="social-icons" id="social-links" hidden>
+                        <a href="https://www.facebook.com/" title="Facebook" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><i class="bi bi-facebook"></i></a>
+                        <a href="https://x.com/" title="X" aria-label="X" target="_blank" rel="noopener noreferrer"><i class="bi bi-twitter-x"></i></a>
+                        <a href="https://www.instagram.com/" title="Instagram" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><i class="bi bi-instagram"></i></a>
+                        <a href="https://www.linkedin.com/" title="LinkedIn" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-secondary opacity-25">
+            <div class="text-center small text-muted pt-2">
+                &copy; 2026 Campus Lost & Found System. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

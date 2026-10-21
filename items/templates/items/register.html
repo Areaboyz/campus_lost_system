@@ -1,0 +1,182 @@
+{% extends 'items/base.html' %}
+
+{% block content %}
+<style>
+    .auth-wrapper {
+        min-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background: #0a1f4b;
+        border-radius: 24px;
+        padding: 40px 20px;
+        margin: 20px 0;
+    }
+    .auth-card {
+        width: 100%;
+        max-width: 550px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        overflow: hidden;
+    }
+    .step-section { display: none; }
+    .step-section.active { display: block; }
+</style>
+
+<div class="auth-wrapper">
+    <!-- Top Branding Logo & Header -->
+    <div class="text-center mb-4">
+        <div class="bg-white p-2 rounded-circle d-inline-block shadow-sm mb-2" style="width: 60px; height: 60px; line-height: 45px;">
+            <i class="bi bi-shield-lock-fill text-primary fs-3"></i>
+        </div>
+        <h3 class="text-white fw-bold mb-0">Campus Portal</h3>
+        <p class="text-success small fw-semibold tracking-wide">LOST & FOUND NETWORK</p>
+    </div>
+
+    <div class="auth-card p-4 p-md-5">
+        <div class="text-center mb-4">
+            <h3 class="fw-bold text-dark mb-1">Create Student Account</h3>
+            <p class="text-muted small">Join the official campus Lost & Found portal.</p>
+        </div>
+
+        <form method="POST" id="registrationForm" class="needs-validation" novalidate>
+            {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    {% for error in form.non_field_errors %}<p class="mb-0 small">{{ error }}</p>{% endfor %}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+
+            <!-- ================= PART 1: ACADEMIC & PERSONAL INFO ================= -->
+            <div class="step-section {% if not form.register_purpose.errors and not form.search_category.errors %}active{% endif %}" id="step1">
+                <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded-2 border">
+                    <span class="small fw-bold text-success"><i class="bi bi-sliders me-1"></i> PART 1: ACADEMIC & PERSONAL INFO</span>
+                    <span class="badge bg-success">Step 1 of 2</span>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="text" name="full_name" class="form-control {% if form.full_name.errors %}is-invalid{% endif %}" id="id_full_name" placeholder="e.g. Lazarus Gomit" value="{{ form.full_name.value|default:'' }}" autocomplete="name" required>
+                    <label for="id_full_name"><i class="bi bi-person me-2"></i>Full Name *</label>
+                    {% for error in form.full_name.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    <div class="form-text"><span class="text-danger fw-semibold">* Required.</span> Enter your first and last name.</div>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="email" name="email" class="form-control {% if form.email.errors %}is-invalid{% endif %}" id="id_email" placeholder="e.g. student@kisiiuniversity.ac.ke" value="{{ form.email.value|default:'' }}" required>
+                    <label for="id_email"><i class="bi bi-envelope me-2"></i>Email Address *</label>
+                    {% for error in form.email.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    <div class="form-text"><span class="text-danger fw-semibold">* Required.</span> Use a valid email address you can access.</div>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="tel" name="phone_number" class="form-control {% if form.phone_number.errors %}is-invalid{% endif %}" id="id_phone" placeholder="e.g. 0712 345 678" value="{{ form.phone_number.value|default:'' }}" required>
+                    <label for="id_phone"><i class="bi bi-telephone me-2"></i>Phone Number *</label>
+                    {% for error in form.phone_number.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    <div class="form-text"><span class="text-danger fw-semibold">* Required.</span> Add a number where you can be reached.</div>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <input type="password" name="password1" class="form-control" id="id_password1" placeholder="Password" required>
+                    <label for="id_password1"><i class="bi bi-lock me-2"></i>Password (Min 8 chars) *</label>
+                    {% for error in form.password1.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    <div class="form-text"><span class="text-danger fw-semibold">* Required.</span> Use at least 8 characters.</div>
+                    <div class="form-check mt-2"><input class="form-check-input password-toggle" type="checkbox" id="showPassword1"><label class="form-check-label small text-secondary" for="showPassword1">Show password</label></div>
+                </div>
+
+                <div class="form-floating mb-4">
+                    <input type="password" name="password2" class="form-control" id="id_password2" placeholder="Confirm Password" required>
+                    <label for="id_password2"><i class="bi bi-check2-circle me-2"></i>Confirm Password *</label>
+                    {% for error in form.password2.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    <div class="form-text"><span class="text-danger fw-semibold">* Required.</span> Re-enter the same password.</div>
+                    <div class="form-check mt-2"><input class="form-check-input password-toggle" type="checkbox" id="showPassword2"><label class="form-check-label small text-secondary" for="showPassword2">Show password</label></div>
+                </div>
+
+                <button type="button" class="btn btn-success w-100 py-3 fw-bold rounded-3 shadow-sm" onclick="nextStep()">
+                    Next: Purpose & Search Intent <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+            </div>
+
+            <!-- ================= PART 2: SEARCH INTENT & CATEGORY ================= -->
+            <div class="step-section {% if form.register_purpose.errors or form.search_category.errors %}active{% endif %}" id="step2">
+                <div class="d-flex justify-content-between align-items-center mb-3 bg-light p-2 rounded-2 border">
+                    <span class="small fw-bold text-success"><i class="bi bi-sliders me-1"></i> PART 2: SEARCH INTENT & FILTER</span>
+                    <span class="badge bg-success">Step 2 of 2</span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-bold text-muted">WHY ARE YOU REGISTERING? <span class="text-danger">* Required</span></label>
+                    <select name="register_purpose" class="form-select form-select-lg">
+                        <option value="searching" {% if form.register_purpose.value == 'searching' %}selected{% endif %}>Finding a lost item / searching</option>
+                        <option value="reporting" {% if form.register_purpose.value == 'reporting' %}selected{% endif %}>Reporting found items</option>
+                        <option value="both" {% if form.register_purpose.value == 'both' or not form.register_purpose.value %}selected{% endif %}>Both searching & reporting</option>
+                    </select>
+                    {% for error in form.register_purpose.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-muted">PRIMARY ITEM CATEGORY OF INTEREST <span class="text-secondary">(Optional)</span></label>
+                    <select name="search_category" class="form-select form-select-lg">
+                        <option value="">-- Choose Category to Search --</option>
+                        <option value="electronics" {% if form.search_category.value == 'electronics' %}selected{% endif %}>Electronics & Laptops</option>
+                        <option value="IDs" {% if form.search_category.value == 'IDs' %}selected{% endif %}>Student IDs & Cards</option>
+                        <option value="books" {% if form.search_category.value == 'books' %}selected{% endif %}>Books & Course Materials</option>
+                        <option value="keys" {% if form.search_category.value == 'keys' %}selected{% endif %}>Keys & Wallets</option>
+                        <option value="clothing" {% if form.search_category.value == 'clothing' %}selected{% endif %}>Clothing & Accessories</option>
+                    </select>
+                    {% for error in form.search_category.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                    <div class="form-text text-success small mt-1">
+                        <i class="bi bi-info-circle-fill"></i> Your campus home feed will prioritize items in this category.
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-light border w-50 py-3 fw-bold rounded-3" onclick="prevStep()">
+                        <i class="bi bi-arrow-left me-1"></i> Back to Part 1
+                    </button>
+                    <button type="submit" id="submitBtn" class="btn btn-success w-50 py-3 fw-bold rounded-3 shadow-sm">
+                        <span id="btnText">Complete Registration</span>
+                        <span id="btnSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <div class="text-center mt-4 pt-3 border-top">
+            <p class="small text-muted mb-0">
+                Already registered? <a href="{% url 'login' %}" class="text-success text-decoration-none fw-bold ms-1">Sign In to Portal →</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function nextStep() {
+        const stepOne = document.getElementById('step1');
+        for (const field of stepOne.querySelectorAll('input[required]')) {
+            if (!field.reportValidity()) return;
+        }
+        stepOne.classList.remove('active');
+        document.getElementById('step2').classList.add('active');
+    }
+    function prevStep() {
+        document.getElementById('step2').classList.remove('active');
+        document.getElementById('step1').classList.add('active');
+    }
+    document.querySelectorAll('.password-toggle').forEach(function (toggle) {
+        toggle.addEventListener('change', function () {
+            const password = document.getElementById(this.id === 'showPassword1' ? 'id_password1' : 'id_password2');
+            password.type = this.checked ? 'text' : 'password';
+        });
+    });
+    document.getElementById('registrationForm').addEventListener('submit', function () {
+        document.getElementById('btnText').innerText = 'Creating Account...';
+        document.getElementById('btnSpinner').classList.remove('d-none');
+        document.getElementById('submitBtn').disabled = true;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends 'items/base.html' %}
+{% block title %}Profile Settings · Campus Lost &amp; Found{% endblock %}
+{% block content %}
+<style>
+    .profile-picture-card { max-width: 760px; }
+    .profile-picture-wrap { position: relative; display: inline-block; }
+    .profile-picture-avatar { width: 112px; height: 112px; object-fit: cover; }
+    .profile-picture-placeholder { width: 112px; height: 112px; color: #b8c0c8; font-size: 76px; }
+    .profile-picture-edit {
+        position: absolute; right: -5px; bottom: 4px; display: grid; place-items: center;
+        width: 34px; height: 34px; border: 1px solid var(--campus-line); border-radius: 50%;
+        background: #fff; color: var(--campus-blue); cursor: pointer; box-shadow: 0 2px 8px rgba(16, 47, 112, .12);
+        transition: transform .18s ease, background .18s ease, color .18s ease;
+    }
+    .profile-picture-edit:hover { background: var(--campus-blue); color: #fff; transform: translateY(-2px); }
+    .profile-picture-input { display: none; }
+</style>
+<section class="page-heading">
+    <div class="eyebrow">Account</div>
+    <h1>Profile Settings</h1>
+    <p>Manage your personal and emergency contact details.</p>
+</section>
+
+<nav class="surface p-2 mb-4 d-flex flex-wrap gap-2" aria-label="Profile settings">
+    <button class="button-soft profile-section-tab" type="button" data-section="personal-details" aria-controls="personal-details"><i class="bi bi-person me-2"></i>Personal Details</button>
+    <button class="button-soft profile-section-tab" type="button" data-section="emergency-contact" aria-controls="emergency-contact"><i class="bi bi-telephone-plus me-2"></i>Emergency Contact</button>
+    <a class="button-soft" href="{% url 'password_change' %}"><i class="bi bi-lock me-2"></i>Change Password</a>
+</nav>
+
+{% if messages %}{% for message in messages %}<div class="alert alert-success" role="status">{{ message }}</div>{% endfor %}{% endif %}
+{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="surface p-4 p-md-5" style="max-width: 760px;">
+    {% csrf_token %}
+    <input type="hidden" name="active_section" id="active-section" value="personal-details">
+    <section class="profile-picture-card text-center mx-auto mb-4">
+        <div class="profile-picture-wrap">
+            {% if form.instance.profile_picture %}
+                <img id="profile-picture-preview" src="{{ form.instance.profile_picture.url }}" alt="Your profile picture" class="profile-picture-avatar rounded-circle border">
+            {% else %}
+                <div id="profile-picture-placeholder" class="profile-picture-placeholder rounded-circle border bg-light d-inline-flex align-items-center justify-content-center">
+                    <i class="bi bi-person" aria-hidden="true"></i>
+                </div>
+                <img id="profile-picture-preview" alt="Selected profile picture preview" class="profile-picture-avatar rounded-circle border" style="display:none;">
+            {% endif %}
+            <label class="profile-picture-edit" for="{{ form.profile_picture.id_for_label }}" title="Add or change profile picture" aria-label="Add or change profile picture">
+                <i class="bi bi-arrow-up"></i>
+            </label>
+            {{ form.profile_picture }}
+        </div>
+        <p class="mb-1 mt-3 fw-semibold">{{ user.get_full_name|default:user.username }}</p>
+        <small id="profile-picture-help" class="text-muted">Click the arrow to add or change your picture.</small>
+        {% for error in form.profile_picture.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+    </section>
+    <section id="personal-details" class="mb-4 profile-settings-panel">
+        <h2 class="section-title"><i class="bi bi-person me-2"></i>Personal Details</h2>
+        {% for field in form %}{% if field.name == 'first_name' or field.name == 'last_name' or field.name == 'email' %}
+        <div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>
+        {% endif %}{% endfor %}
+    </section>
+    <section id="emergency-contact" class="mb-4 profile-settings-panel" hidden>
+        <h2 class="section-title"><i class="bi bi-telephone-plus me-2"></i>Emergency Contact</h2>
+        {% with field=form.emergency_contact_name %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">Contact name</label>{{ field }}{% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>{% endwith %}
+        {% with field=form.emergency_contact_phone %}<div class="mb-3"><label class="form-label" for="{{ field.id_for_label }}">Contact phone</label>{{ field }}{% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}</div>{% endwith %}
+    </section>
+    <button type="submit" class="button-primary"><i class="bi bi-check2"></i> Save details</button>
+</form>
+<script>
+    const profilePictureInput = document.getElementById('{{ form.profile_picture.id_for_label }}');
+    if (profilePictureInput) {
+        profilePictureInput.addEventListener('change', function () {
+            const selectedFile = this.files && this.files[0];
+            if (!selectedFile) return;
+            const preview = document.getElementById('profile-picture-preview');
+            preview.src = URL.createObjectURL(selectedFile);
+            preview.style.display = 'inline-block';
+            const placeholder = document.getElementById('profile-picture-placeholder');
+            if (placeholder) placeholder.style.display = 'none';
+            document.getElementById('profile-picture-help').textContent = selectedFile.name + ' selected. Save details to apply it.';
+        });
+    }
+</script>
+<script>
+    const profileTabs = document.querySelectorAll('.profile-section-tab');
+    const profilePanels = document.querySelectorAll('.profile-settings-panel');
+    const activeSectionField = document.getElementById('active-section');
+    function showProfileSection(sectionId) {
+        if (!document.getElementById(sectionId) || !document.getElementById(sectionId).classList.contains('profile-settings-panel')) {
+            sectionId = 'personal-details';
+        }
+        profilePanels.forEach(panel => { panel.hidden = panel.id !== sectionId; });
+        profileTabs.forEach(tab => {
+            const active = tab.dataset.section === sectionId;
+            tab.setAttribute('aria-pressed', active ? 'true' : 'false');
+            tab.classList.toggle('button-primary', active);
+            tab.classList.toggle('button-soft', !active);
+        });
+        activeSectionField.value = sectionId;
+    }
+    profileTabs.forEach(tab => tab.addEventListener('click', () => showProfileSection(tab.dataset.section)));
+    showProfileSection(window.location.hash.slice(1));
+</script>
+{% endblock %}
